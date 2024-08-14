@@ -1,0 +1,15 @@
+#pragma kernel CSMain
+
+RWStructuredBuffer<float3> Positions;
+RWStructuredBuffer<float3> Velocities;
+
+uint ParticleCount;
+
+[numthreads(64, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x > ParticleCount - 1)
+        return;
+
+    Positions[id.x] = Positions[id.x];
+}
