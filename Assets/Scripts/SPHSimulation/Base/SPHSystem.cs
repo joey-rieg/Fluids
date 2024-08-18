@@ -1,5 +1,5 @@
-using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public abstract class SPHSystem<T> : MonoBehaviour
 {
@@ -12,7 +12,17 @@ public abstract class SPHSystem<T> : MonoBehaviour
   [SerializeField]
   protected SPHRenderer<T> _renderer;
 
+  [field:SerializeField]
+  public SPHBoundary<T> Boundary { get; set; }
+
+  [SerializeField]
+  private SPHSystemProperties _properties;
+
+  [SerializeField]
+  private bool _stepWiseSimulation = true;
+
   public ComputeBuffer Positions { get; protected set; }
+
   public ComputeBuffer Velocities { get; protected set; }
 
   public int ParticleCount { get; private set; }
@@ -20,6 +30,9 @@ public abstract class SPHSystem<T> : MonoBehaviour
   protected int _kernelIdx;
   protected uint _threadGroupSizeX;
   protected int _particleCount;
+
+  private bool _isPaused = false;
+  private bool _pauseNextFrame = false;
 
   void Start()
   {
@@ -29,6 +42,10 @@ public abstract class SPHSystem<T> : MonoBehaviour
     int positionBufferID = Shader.PropertyToID("Positions");
     int velocityBufferID = Shader.PropertyToID("Velocities");
     int particleCountID = Shader.PropertyToID("ParticleCount");
+
+    // Time initalization
+    float deltaTime = 1 / 60f;
+    Time.fixedDeltaTime = deltaTime;
 
     // Spawn Data
     var spawnData = _spawner.GetSpawnData();
@@ -44,7 +61,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
     _compute.SetInt(particleCountID, ParticleCount);
 
     // Renderer initialization
-    InitRenderer();
+    _renderer.Init(this);
   }
 
   void OnDestroy()
@@ -57,13 +74,69 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   void Update()
   {
-    int threadsX = (int)((ParticleCount + (_threadGroupSizeX - 1)) / _threadGroupSizeX);
-    _compute.Dispatch(_kernelIdx, threadsX, 1, 1);
+    if (!_stepWiseSimulation && Time.frameCount > 10)
+    {
+      RunSimulationStep(Time.deltaTime);      
+    }
 
+    if (_pauseNextFrame)
+    {
+      _isPaused = true;
+      _pauseNextFrame = false; 
+    }
+
+    HandleInput();
   }
+
+  void LateUpdate()
+  {
+    if (_stepWiseSimulation)
+    {
+      RunSimulationStep(Time.fixedDeltaTime);
+    }
+  }
+
   protected abstract void InitBuffers();
 
-  protected abstract void InitRenderer();
-
   protected abstract void FillBuffers(ref SpawnData<T> data);
+
+  protected abstract void SetComputeBoundary();
+
+  void RunSimulationStep(float timeStep)
+  {
+    float simulationStep = (timeStep / _properties.IterationsPerFrame) * _properties.TimeScale;
+    SetComputeProperties(simulationStep);
+
+    if (_isPaused)
+      return;
+
+    for (int i = 0; i < _properties.IterationsPerFrame; i++)
+    {
+      int threadsX = (int)((ParticleCount + (_threadGroupSizeX - 1)) / _threadGroupSizeX);
+      _compute.Dispatch(_kernelIdx, threadsX, 1, 1);
+    }
+  }
+
+  private void SetComputeProperties(float timeStep)
+  {
+    SetComputeBoundary();
+
+    _compute.SetFloat("TimeStep", timeStep);
+    _compute.SetVector("Gravity", _properties.Gravity);
+    _compute.SetFloat("BoundaryDampening", _properties.BoundaryDampening);
+  }
+
+  private void HandleInput()
+  {
+    if (Keyboard.current.spaceKey.wasPressedThisFrame)
+    {
+      _isPaused = !_isPaused;
+    }
+
+    if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
+    {
+      _isPaused = false;
+      _pauseNextFrame = true;
+    }
+  }
 }
