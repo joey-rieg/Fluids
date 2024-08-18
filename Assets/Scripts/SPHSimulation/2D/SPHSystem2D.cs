@@ -8,13 +8,15 @@ public class SPHSystem2D : SPHSystem<Vector2>
     Velocities = new ComputeBuffer(ParticleCount, 2 * sizeof (float), ComputeBufferType.Structured);
   }
 
-  protected override void InitRenderer()
-  {
-    _renderer.Init(this);
-  }
   protected override void FillBuffers(ref SpawnData<Vector2> data)
   {
     Positions.SetData(data.Positions);
     Velocities.SetData(data.Velocities);
+  }
+
+  protected override void SetComputeBoundary()
+  {
+    _compute.SetVector("BoundaryCenter", Boundary.Center);
+    _compute.SetVector("BoundarySize", Boundary.Size);
   }
 }

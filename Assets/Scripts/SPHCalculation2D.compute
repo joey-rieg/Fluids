@@ -3,13 +3,46 @@
 RWStructuredBuffer<float2> Positions;
 RWStructuredBuffer<float2> Velocities;
 
-uint ParticleCount;
+const uint ParticleCount;
+const float2 BoundaryCenter;
+const float2 BoundarySize;
+const float2 Gravity;
+const float TimeStep;
+const float BoundaryDampening;
 
-[numthreads(64,1,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void ResolveCollision(uint particleID)
+{
+    float2 pos = Positions[particleID];
+    float2 vel = Velocities[particleID];
+    
+    float2 centeredAbsPos = abs(pos - BoundaryCenter);
+    float2 halfSize = 0.5 * BoundarySize;
+    float2 edgeDistance = halfSize - centeredAbsPos;
+    
+    if (edgeDistance.x <= 0)
+    {
+        pos.x = BoundaryCenter.x + sign(pos.x - BoundaryCenter.x) * halfSize.x;
+        vel.x *= -1.0 * BoundaryDampening;
+    }
+    
+    if (edgeDistance.y <= 0)
+    {
+        pos.y = BoundaryCenter.y + sign(pos.y - BoundaryCenter.y) * halfSize.y;
+        vel.y *= -1.0 * BoundaryDampening;
+    }   
+    
+    Positions[particleID] = pos;
+    Velocities[particleID] = vel;
+}
+
+[numthreads(64, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
 {
     if (id.x > ParticleCount - 1)
         return;
-
-    Positions[id.x] = Positions[id.x];
+        
+    Velocities[id.x] += Gravity * TimeStep;
+    Positions[id.x] += Velocities[id.x] * TimeStep;
+    
+    ResolveCollision(id.x);
 }

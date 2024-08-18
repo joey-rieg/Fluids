@@ -1,7 +1,6 @@
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class SPHRenderer<T> : MonoBehaviour
+public abstract class SPHRenderer<T> : MonoBehaviour
 {
   [SerializeField]
   [Tooltip("Mesh to render as particle")]
@@ -21,6 +20,7 @@ public class SPHRenderer<T> : MonoBehaviour
 
   private int _localTransformID;
   private int _scaleID;
+  private SPHBoundary<T> _boundary;
 
   public void Init(SPHSystem<T> simulation)
   {
@@ -39,6 +39,8 @@ public class SPHRenderer<T> : MonoBehaviour
     _scaleID = Shader.PropertyToID("Scale");
     int positionBufferID = Shader.PropertyToID("Positions");
     _material.SetBuffer(positionBufferID, simulation.Positions);
+
+    _boundary = simulation.Boundary;
   }
 
   void LateUpdate()
