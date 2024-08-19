@@ -180,7 +180,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df72934651f02f4c9a59059afabaa3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _particleScale: 0.3
   _material: {fileID: 2100000, guid: b0ad9e9c68c486949a41104c0d9fe965, type: 2}
 --- !u!1 &1402251166
@@ -520,8 +520,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlesPerDimension: 2
-  _size: 1
+  _particlesPerDimension: 10
+  _size: 5.1
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &1402251168
@@ -533,7 +533,7 @@ Transform:
   m_GameObject: {fileID: 1402251166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 0}
+  m_LocalPosition: {x: 0, y: 1.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -565,8 +565,8 @@ Transform:
   m_GameObject: {fileID: 1992801864}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 8, y: 8, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 16, y: 9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -583,8 +583,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b0294bff14d9d44b8e62f3d920c0064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Center>k__BackingField: {x: 0, y: 3}
-  <Size>k__BackingField: {x: 8, y: 8}
+  <Center>k__BackingField: {x: 0, y: 0}
+  <Size>k__BackingField: {x: 16, y: 9}
   <WireColor>k__BackingField: {r: 1, g: 1, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

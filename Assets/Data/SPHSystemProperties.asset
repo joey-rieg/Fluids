@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SPHSystemProperties
   m_EditorClassIdentifier: 
   TimeScale: 1
-  IterationsPerFrame: 10
+  IterationsPerFrame: 3
   Gravity: {x: 0, y: -9.81, z: 0}
   BoundaryDampening: 0.8
