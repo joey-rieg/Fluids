@@ -1,0 +1,43 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWStructuredBuffer<float> Values;
+RWStructuredBuffer<float> Output;
+int BufferLength;
+
+groupshared float sharedMemory[1024];
+
+[numthreads(1024,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID, uint3 group : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    
+    uint idx = id.x;
+    
+    if ((int) idx < BufferLength)
+    {
+        sharedMemory[groupThreadID.x] = Values[idx];
+    }
+    else
+    {
+        sharedMemory[groupThreadID.x] = 0.0f;
+    }
+    
+    GroupMemoryBarrierWithGroupSync();
+    
+    for (uint stride = 1024 / 2; stride > 0; stride /= 2)
+    {
+        if (groupThreadID.x < stride)  
+        {
+            sharedMemory[groupThreadID.x] += sharedMemory[groupThreadID.x + stride];
+        }
+        
+        GroupMemoryBarrierWithGroupSync();
+    }
+    
+    if (groupThreadID.x == 0)
+    {
+        Output[group.x] = sharedMemory[0];
+    }
+}
