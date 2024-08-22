@@ -1,0 +1,69 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+RWStructuredBuffer<float2> Positions;
+RWStructuredBuffer<float> DensityOutput;
+
+const uint ParticleCount;
+const float2 KernelCenter;
+const float KernelRadius;
+
+static const float PI = 3.14159265f;
+
+groupshared float sharedInfluenceMemory[256];
+
+float LinearInfluence(float2 samplePoint, float2 center, float radius)
+{
+    float distance = length(samplePoint - center);
+    
+    float volume = (PI * radius * radius) / 3.0f;
+    
+    float influence = max(0, 1.0f - distance / radius);
+    
+    return influence / volume;
+
+}
+
+float Influence(float2 samplePoint, float2 center, float radius)
+{
+    float distance = length(samplePoint - center);
+    
+    float volume = PI * pow(radius, 8) / 4;
+    
+    float value = max(0, radius * radius - distance * distance);    
+    
+    return value * value * value / volume;
+}
+
+[numthreads(256,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID, uint3 group : SV_GroupID, uint3 groupThread : SV_GroupThreadID)
+{
+    uint idx = id.x;
+    
+    if (idx < ParticleCount)
+    {
+        sharedInfluenceMemory[groupThread.x] = LinearInfluence(Positions[idx], KernelCenter, KernelRadius);
+    }
+    else
+    {
+        sharedInfluenceMemory[groupThread.x] = 0.0f;
+    }
+    
+    GroupMemoryBarrierWithGroupSync();
+    
+    for (uint stride = 256 / 2; stride > 0; stride /= 2)
+    {
+        if (groupThread.x < stride)
+        {
+            sharedInfluenceMemory[groupThread.x] += sharedInfluenceMemory[groupThread.x + stride];
+        }
+        
+        GroupMemoryBarrierWithGroupSync();
+
+    }
+    
+    if (groupThread.x == 0)
+    {
+        DensityOutput[group.x] = sharedInfluenceMemory[0];
+    }
+}

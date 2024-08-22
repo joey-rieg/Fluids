@@ -37,9 +37,11 @@ Shader "SPH/DensityParticleShader"
                 uint instanceID = GetIndirectInstanceID(svInstanceID);
                 int instanceCount = GetIndirectInstanceCount();
 
-                o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex + Positions[instanceID], 0, 1));
+                o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex * Scale  + Positions[instanceID], 0, 1));
                 o.uv = v.texcoord;
-                o.color = float3(1,0,0);
+
+                float2 c2p = KernelCenter - Positions[instanceID];
+                o.color = sqrt(dot(c2p, c2p)) < KernelRadius ? float3(0, 0, 1) : float3(.3,.3,.3);
                 return o;
             }
 
