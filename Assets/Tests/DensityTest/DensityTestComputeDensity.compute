@@ -1,4 +1,3 @@
-// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
 RWStructuredBuffer<float2> Positions;
@@ -59,7 +58,6 @@ void CSMain(uint3 id : SV_DispatchThreadID, uint3 group : SV_GroupID, uint3 grou
         }
         
         GroupMemoryBarrierWithGroupSync();
-
     }
     
     if (groupThread.x == 0)

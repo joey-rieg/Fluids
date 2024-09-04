@@ -1,7 +1,5 @@
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class DensityTest : MonoBehaviour
 {
