@@ -46,22 +46,19 @@ float4 DensityToColor(float density, float radius)
 
     if (density <= 0.0f)
     {
-        // No density, fully transparent
         color = float3(0, 0, 0);
         alpha = 0.0f;
     }
     else if (density < (radius + 0.3f))
     {
-        // Density increases from 0 to targetDensity
         float t = density / (radius + 0.3f);
-        color = lerp(float3(0, 0, 1), float3(0, 1, 1), t); // From blue to white
-        alpha = t; // Alpha increases with density
+        color = lerp(float3(0, 0, 1), float3(0, 1, 1), t);
+        alpha = t;
     }
     else
     {
-        // Density exceeds radius
-        color = float3(0, 1, 1); // Solid white
-        alpha = 1.0f; // Fully opaque
+        color = float3(0, 1, 1);
+        alpha = 1.0f;
     }
 
     return float4(color, alpha);
