@@ -1,6 +1,6 @@
 #pragma kernel CSMain
 
-#include "../SPHMath2D.hlsl"
+#include "../Compute/SPHMath2D.hlsl"
 
 RWStructuredBuffer<float2> Positions;
 float KernelRadius;
