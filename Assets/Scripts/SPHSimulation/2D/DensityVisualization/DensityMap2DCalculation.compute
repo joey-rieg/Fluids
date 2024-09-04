@@ -1,5 +1,7 @@
 #pragma kernel CSMain
 
+#include "../SPHMath2D.hlsl"
+
 RWStructuredBuffer<float2> Positions;
 float KernelRadius;
 float TargetDensity;
@@ -9,23 +11,6 @@ float OrthographicSize;
 float AspectRatio;
 
 RWTexture2D<float4> RenderTexture;
-
-static const float PI = 3.14159265f;
-
-float SmoothingKernel(float distance, float radius)
-{
-    float influence = 0;
-    float volume = PI * pow(radius, 8) / 4;
-        
-    if (volume > 0.0)
-    {
-        float value = max(0, radius * radius - distance * distance);
-    
-        influence = value * value * value / volume;
-    }
-    
-    return influence;
-}
 
 float2 PixelToWorldPosition(uint2 pixelPos)
 {
@@ -73,7 +58,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     for (int i = 0; i < ParticleCount; i++)
     {
         float distance = length(worldPosOfPixel - Positions[i]);
-        density += SmoothingKernel(distance, KernelRadius);
+        density += Poly6Kernel(distance, KernelRadius);
     }
     
     RenderTexture[id.xy] = DensityToColor(density, KernelRadius);
