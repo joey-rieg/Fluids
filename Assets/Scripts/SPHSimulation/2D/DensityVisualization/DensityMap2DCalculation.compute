@@ -26,8 +26,13 @@ float2 PixelToWorldPosition(uint2 pixelPos)
 
 float4 DensityToColor(float density, float radius)
 {
-    float3 color;
-    float alpha;
+    float3 color = float3(0, 1, 1);
+    float alpha = 0.0f;
+    
+    //if (density > 0.0f)
+    //{
+    //    alpha = clamp(density, 0, 1);
+    //}
 
     if (density <= 0.0f)
     {
