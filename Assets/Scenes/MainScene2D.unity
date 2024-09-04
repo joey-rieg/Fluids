@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -180,7 +181,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -255,6 +256,23 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90524a2b7549f9429fe09c84cdf26d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shader: {fileID: 7200000, guid: bee7f5018e8c40f429d1c475a174fffb, type: 3}
+  _densityDisplayMat: {fileID: 2100000, guid: 512cf0187a2dfa94880831cd42ccae71, type: 2}
+  _simulation: {fileID: 1104116086}
+  _properties: {fileID: 11400000, guid: cd63996f1dd4fb648bf70cf1b18d0664, type: 2}
+  _isRendering: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,7 +507,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  _particleScale: 0.3
+  _particleScale: 0.1
   _material: {fileID: 2100000, guid: b0ad9e9c68c486949a41104c0d9fe965, type: 2}
 --- !u!1 &1402251166
 GameObject:
@@ -520,10 +538,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlesPerDimension: 10
-  _size: 5.1
+  _particlesPerDimension: 17
+  _size: 20
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
+  _randomize: 1
 --- !u!4 &1402251168
 Transform:
   m_ObjectHideFlags: 0
@@ -533,7 +552,7 @@ Transform:
   m_GameObject: {fileID: 1402251166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -566,7 +585,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 16, y: 9, z: 1}
+  m_LocalScale: {x: 35.555557, y: 20, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -584,7 +603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Center>k__BackingField: {x: 0, y: 0}
-  <Size>k__BackingField: {x: 16, y: 9}
+  <Size>k__BackingField: {x: 35.555557, y: 20}
   <WireColor>k__BackingField: {r: 1, g: 1, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

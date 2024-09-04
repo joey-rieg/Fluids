@@ -1,0 +1,83 @@
+#pragma kernel CSMain
+
+RWStructuredBuffer<float2> Positions;
+float KernelRadius;
+float TargetDensity;
+int ParticleCount;
+float2 Resolution;
+float OrthographicSize;
+float AspectRatio;
+
+RWTexture2D<float4> RenderTexture;
+
+static const float PI = 3.14159265f;
+
+float SmoothingKernel(float distance, float radius)
+{
+    float influence = 0;
+    float volume = PI * pow(radius, 8) / 4;
+        
+    if (volume > 0.0)
+    {
+        float value = max(0, radius * radius - distance * distance);
+    
+        influence = value * value * value / volume;
+    }
+    
+    return influence;
+}
+
+float2 PixelToWorldPosition(uint2 pixelPos)
+{
+    float2 texcoord = pixelPos / Resolution;
+    
+    float2 ndc = (texcoord - 0.5) * 2.0;
+    
+    float x = ndc.x * OrthographicSize * AspectRatio;
+    float y = ndc.y * OrthographicSize;
+    
+    return float2(x, y);
+}
+
+float4 DensityToColor(float density, float radius)
+{
+    float3 color;
+    float alpha;
+
+    if (density <= 0.0f)
+    {
+        // No density, fully transparent
+        color = float3(0, 0, 0);
+        alpha = 0.0f;
+    }
+    else if (density < (radius + 0.3f))
+    {
+        // Density increases from 0 to targetDensity
+        float t = density / (radius + 0.3f);
+        color = lerp(float3(0, 0, 1), float3(0, 1, 1), t); // From blue to white
+        alpha = t; // Alpha increases with density
+    }
+    else
+    {
+        // Density exceeds radius
+        color = float3(0, 1, 1); // Solid white
+        alpha = 1.0f; // Fully opaque
+    }
+
+    return float4(color, alpha);
+}
+
+[numthreads(16, 16, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    float2 worldPosOfPixel = PixelToWorldPosition(id.xy);
+    
+    float density = 0;
+    for (int i = 0; i < ParticleCount; i++)
+    {
+        float distance = length(worldPosOfPixel - Positions[i]);
+        density += SmoothingKernel(distance, KernelRadius);
+    }
+    
+    RenderTexture[id.xy] = DensityToColor(density, KernelRadius);
+}

@@ -19,9 +19,15 @@ public class SPHSpawner2D : SPHSpawner<Vector2>
         float tx = x / (float)(_particlesPerDimension - 1);
         float ty = y / (float)(_particlesPerDimension - 1);
 
-        positions[i] = new Vector2((tx - 0.5f) * _size + transformOffset.x, (ty - 0.5f) * _size + transformOffset.y);
-        if (i < 3)
-          Debug.Log("Position for " + i + " is " + positions[i]);
+        if (_randomize)
+        {
+          float halfSize = 0.5f * _size;
+          positions[i] = new Vector2(Random.Range(-halfSize, halfSize), Random.Range(-halfSize, halfSize)) + 
+            new Vector2(transformOffset.x, transformOffset.y);
+        }
+        else
+          positions[i] = new Vector2((tx - 0.5f) * _size + transformOffset.x, (ty - 0.5f) * _size + transformOffset.y);
+
         velocities[i] = Vector2.zero;
 
         i++;

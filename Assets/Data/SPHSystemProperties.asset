@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TimeScale: 1
   IterationsPerFrame: 3
-  Gravity: {x: 0, y: -9.81, z: 0}
+  Gravity: {x: 0, y: 0, z: 0}
   BoundaryDampening: 0.8
+  KernelRadius: 0.18
+  TargetDensity: 2.2

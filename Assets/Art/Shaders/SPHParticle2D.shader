@@ -41,7 +41,8 @@ Shader "SPH/SPHParticle2D"
 
                 o.vertex = mul(UNITY_MATRIX_VP, float4(wPos, 1));
                 
-                o.color = float4(lerp(0, 1, instanceID / (float)instanceCount), 0, 1, 1);
+                //o.color = float4(lerp(0, 1, instanceID / (float)instanceCount), 0, 1, 1);
+                o.color = float4(1, 1, 1, 1);
                 o.uv = v.texcoord;
                 return o;
             }

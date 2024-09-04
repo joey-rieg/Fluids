@@ -16,4 +16,12 @@ public class SPHSystemProperties : ScriptableObject
 
   [Tooltip("Dampening factor when particles hit an object")]
   public float BoundaryDampening = 0.05f;
+
+  [Range(0.0f, 5.0f)]
+  [Tooltip("Influence radius")]
+  public float KernelRadius = 1.0f;
+
+  [Range(0.0f, 20.0f)]
+  [Tooltip("Target density the fluid wants to reach")]
+  public float TargetDensity = 1.0f;
 }
