@@ -1,0 +1,22 @@
+#pragma kernel CSMain
+
+RWStructuredBuffer<float2> Positions;
+
+const uint ParticleCount;
+const int ParticlePerDimension;
+const float ParticleSpread;
+
+[numthreads(256,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint idx = id.x;
+    if (idx > ParticleCount - 1)
+        return;
+
+    float centerOffset = (ParticlePerDimension-1) * ParticleSpread / 2.0f;
+    float x = idx % ParticlePerDimension * ParticleSpread - centerOffset;
+    float y = floor(idx / ParticlePerDimension) * ParticleSpread - centerOffset;
+    float2 position = float2(x, y);    
+    
+    Positions[idx] = position;
+}

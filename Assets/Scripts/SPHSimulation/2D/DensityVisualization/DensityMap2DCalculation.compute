@@ -1,0 +1,70 @@
+#pragma kernel CSMain
+
+#include "../Compute/SPHMath2D.hlsl"
+
+RWStructuredBuffer<float2> Positions;
+float KernelRadius;
+float TargetDensity;
+int ParticleCount;
+float2 Resolution;
+float OrthographicSize;
+float AspectRatio;
+
+RWTexture2D<float4> RenderTexture;
+
+float2 PixelToWorldPosition(uint2 pixelPos)
+{
+    float2 texcoord = pixelPos / Resolution;
+    
+    float2 ndc = (texcoord - 0.5) * 2.0;
+    
+    float x = ndc.x * OrthographicSize * AspectRatio;
+    float y = ndc.y * OrthographicSize;
+    
+    return float2(x, y);
+}
+
+float4 DensityToColor(float density, float radius)
+{
+    float3 color = float3(0, 1, 1);
+    float alpha = 0.0f;
+    
+    //if (density > 0.0f)
+    //{
+    //    alpha = clamp(density, 0, 1);
+    //}
+
+    if (density <= 0.0f)
+    {
+        color = float3(0, 0, 0);
+        alpha = 0.0f;
+    }
+    else if (density < (radius + 0.3f))
+    {
+        float t = density / (radius + 0.3f);
+        color = lerp(float3(0, 0, 1), float3(0, 1, 1), t);
+        alpha = t;
+    }
+    else
+    {
+        color = float3(0, 1, 1);
+        alpha = 1.0f;
+    }
+
+    return float4(color, alpha);
+}
+
+[numthreads(16, 16, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    float2 worldPosOfPixel = PixelToWorldPosition(id.xy);
+    
+    float density = 0;
+    for (int i = 0; i < ParticleCount; i++)
+    {
+        float distance = length(worldPosOfPixel - Positions[i]);
+        density += Poly6Kernel(distance, KernelRadius);
+    }
+    
+    RenderTexture[id.xy] = DensityToColor(density, KernelRadius);
+}

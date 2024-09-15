@@ -24,6 +24,10 @@ public abstract class SPHSpawner<T> : MonoBehaviour
   [Tooltip("Defines color of bounds visualization")]
   protected Color _boundsColor = Color.green;
 
+  [SerializeField]
+  [Tooltip("Randomizes spawn positions inside bounds.")]
+  protected bool _randomize = false;
+
   public abstract SpawnData<T> GetSpawnData();
   protected abstract void DrawBounds(float size);
 
