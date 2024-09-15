@@ -16,5 +16,5 @@ MonoBehaviour:
   IterationsPerFrame: 3
   Gravity: {x: 0, y: 0, z: 0}
   BoundaryDampening: 0.8
-  KernelRadius: 2.64
+  KernelRadius: 1.5
   TargetDensity: 1

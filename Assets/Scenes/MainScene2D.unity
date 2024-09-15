@@ -489,7 +489,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _compute: {fileID: 7200000, guid: a2dcfaac66b0cc144be69028cec4e78b, type: 3}
-  _densityCompute: {fileID: 0}
   _spawner: {fileID: 1402251167}
   _renderer: {fileID: 1104116087}
   <Boundary>k__BackingField: {fileID: 1992801866}
@@ -540,10 +539,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particlesPerDimension: 10
-  _size: 10
+  _size: 20
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
-  _randomize: 0
+  _randomize: 1
 --- !u!4 &1402251168
 Transform:
   m_ObjectHideFlags: 0

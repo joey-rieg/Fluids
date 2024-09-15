@@ -33,4 +33,12 @@ public static class ComputeHelper
 
     return new Vector3Int((int)x, (int)y, (int)z);
   }
+
+  public static void Release(params ComputeBuffer[] buffers)
+  {
+    foreach (var buffer in buffers)
+    {
+      buffer?.Release();
+    }
+  }
 }

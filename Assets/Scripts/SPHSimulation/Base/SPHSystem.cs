@@ -7,9 +7,6 @@ public abstract class SPHSystem<T> : MonoBehaviour
   protected ComputeShader _compute;
 
   [SerializeField]
-  protected ComputeShader _densityCompute;
-
-  [SerializeField]
   protected SPHSpawner<T> _spawner;
 
   [SerializeField]
@@ -42,10 +39,11 @@ public abstract class SPHSystem<T> : MonoBehaviour
   {
     // Compute shader IDs
     _simulationKernelIdx = _compute.FindKernel("Simulate");
-    //_densityKernelIdx = _compute.FindKernel("CalculateDensity");
+    _densityKernelIdx = _compute.FindKernel("CalculateDensity");
 
     int positionBufferID = Shader.PropertyToID("Positions");
     int velocityBufferID = Shader.PropertyToID("Velocities");
+    int densityBufferID = Shader.PropertyToID("Densities");
     int particleCountID = Shader.PropertyToID("ParticleCount");
 
     // Time initalization
@@ -60,8 +58,9 @@ public abstract class SPHSystem<T> : MonoBehaviour
     InitBuffers();
     FillBuffers(ref spawnData);
 
-    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx, _densityKernelIdx);
     ComputeHelper.SetBuffer(_compute, Velocities, velocityBufferID, _simulationKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Densities, densityBufferID, _simulationKernelIdx, _densityKernelIdx);
 
     _compute.SetInt(particleCountID, ParticleCount);
 
@@ -71,10 +70,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   void OnDestroy()
   {
-    Positions?.Release();
-    Positions = null;
-    Velocities?.Release();
-    Velocities = null;
+    ComputeHelper.Release(Positions, Velocities, Densities);
   }
 
   void Update()
@@ -117,7 +113,8 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
     for (int i = 0; i < _properties.IterationsPerFrame; i++)
     {
-      ComputeHelper.Dispatch(_compute, ParticleCount);
+      ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _densityKernelIdx);
+      ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _simulationKernelIdx);
     }
   }
 
@@ -126,6 +123,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
     SetComputeBoundary();
 
     _compute.SetFloat("TimeStep", timeStep);
+    _compute.SetFloat("KernelRadius", _properties.KernelRadius);
     _compute.SetVector("Gravity", _properties.Gravity);
     _compute.SetFloat("BoundaryDampening", _properties.BoundaryDampening);
   }

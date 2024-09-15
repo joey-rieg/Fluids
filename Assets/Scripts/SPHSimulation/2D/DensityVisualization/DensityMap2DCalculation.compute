@@ -58,6 +58,10 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     for (int i = 0; i < ParticleCount; i++)
     {
         float distance = length(worldPosOfPixel - Positions[i]);
+        
+        if (distance > KernelRadius)
+            continue;
+        
         density += Poly6Kernel(distance, KernelRadius);
     }
     
