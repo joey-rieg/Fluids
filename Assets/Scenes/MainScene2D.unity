@@ -538,7 +538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlesPerDimension: 17
+  _particlesPerDimension: 25
   _size: 20
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}

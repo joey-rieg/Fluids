@@ -28,20 +28,15 @@ float4 DensityToColor(float density, float radius)
 {
     float3 color = float3(0, 1, 1);
     float alpha = 0.0f;
-    
-    //if (density > 0.0f)
-    //{
-    //    alpha = clamp(density, 0, 1);
-    //}
 
     if (density <= 0.0f)
     {
         color = float3(0, 0, 0);
         alpha = 0.0f;
     }
-    else if (density < (radius + 0.3f))
+    else if (density < radius)
     {
-        float t = density / (radius + 0.3f);
+        float t = density / radius;
         color = lerp(float3(0, 0, 1), float3(0, 1, 1), t);
         alpha = t;
     }
