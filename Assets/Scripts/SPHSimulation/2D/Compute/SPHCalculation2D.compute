@@ -1,7 +1,9 @@
-#pragma kernel CSMain
+#pragma kernel Simulate
+#pragma kernel CalculateDensity
 
 RWStructuredBuffer<float2> Positions;
 RWStructuredBuffer<float2> Velocities;
+//RWStructuredBuffer<float> Densities;
 
 const uint ParticleCount;
 const float2 BoundaryCenter;
@@ -36,7 +38,13 @@ void ResolveCollision(uint particleID)
 }
 
 [numthreads(64, 1, 1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
+void CalculateDensity(uint3 id : SV_DispatchThreadID)
+{
+    
+}
+
+[numthreads(64, 1, 1)]
+void Simulate(uint3 id : SV_DispatchThreadID)
 {
     if (id.x > ParticleCount - 1)
         return;
