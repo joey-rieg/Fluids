@@ -9,6 +9,7 @@ int ParticleCount;
 float2 Resolution;
 float OrthographicSize;
 float AspectRatio;
+bool RenderGradient;
 
 RWTexture2D<float4> RenderTexture;
 
@@ -49,21 +50,52 @@ float4 DensityToColor(float density, float radius)
     return float4(color, alpha);
 }
 
+float GetDensity(float2 worldPos)
+{
+    float density = 0;
+    for (int i = 0; i < ParticleCount; i++)
+    {
+        float distance = length(worldPos - Positions[i]);
+        
+        if (distance > KernelRadius)
+            continue;
+        
+        density += SpikyKernel(distance, KernelRadius);
+    }
+    
+    return density;
+}
+
+float2 GetGradient(float2 worldPos, float density)
+{
+    float stepSize = 0.001;
+    float deltaX = GetDensity(worldPos + float2(stepSize, 0)) - density;
+    float deltaY = GetDensity(worldPos + float2(0, stepSize)) - density;
+    
+    float2 gradient = float2(deltaX, deltaY) / stepSize;
+    
+    return gradient;
+}
+
 [numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     float2 worldPosOfPixel = PixelToWorldPosition(id.xy);
     
-    float density = 0;
-    for (int i = 0; i < ParticleCount; i++)
+    float density = GetDensity(worldPosOfPixel);    
+    
+    float4 color;
+    if (RenderGradient)
     {
-        float distance = length(worldPosOfPixel - Positions[i]);
+        float2 gradient = GetGradient(worldPosOfPixel, density);    
+        float gradientLength = length(gradient);
         
-        if (distance > KernelRadius)
-            continue;
-        
-        density += Poly6Kernel(distance, KernelRadius);
+        color = float4(gradientLength, gradientLength, gradientLength, 1);
+    }
+    else
+    {
+        color = DensityToColor(density, KernelRadius);
     }
     
-    RenderTexture[id.xy] = DensityToColor(density, KernelRadius);
+    RenderTexture[id.xy] = color;
 }

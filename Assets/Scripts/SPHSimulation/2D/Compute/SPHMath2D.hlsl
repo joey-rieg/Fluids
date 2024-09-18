@@ -16,3 +16,17 @@ float Poly6Kernel(float distance, float radius)
     
     return influence;
 }
+
+float SpikyKernel(float distance, float radius)
+{    
+    float influence = 0;
+    if (distance <= radius)
+    {    
+        float v = radius - distance;
+        float volume = (PI * pow(radius, 4) / 10);
+
+        influence = v * v * v / volume;
+    }
+    
+    return influence;
+}

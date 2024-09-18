@@ -18,6 +18,9 @@ public class DensityRenderer : MonoBehaviour
   [SerializeField]
   private bool _isRendering;
 
+  [SerializeField]
+  private bool _renderGradient = false;
+
   private int _kernelIdx;
   private int _positionsID;
   private int _kernelRadiusID;
@@ -113,5 +116,6 @@ public class DensityRenderer : MonoBehaviour
     _shader.SetFloat("OrthographicSize", _camera.orthographicSize);
     _shader.SetFloat("AspectRatio", _camera.aspect);
     _shader.SetFloat("TargetDensity", _properties.TargetDensity);
+    _shader.SetBool("RenderGradient", _renderGradient);
   }
 }
