@@ -24,4 +24,8 @@ public class SPHSystemProperties : ScriptableObject
   [Range(0.0f, 20.0f)]
   [Tooltip("Target density the fluid wants to reach")]
   public float TargetDensity = 1.0f;
+
+  [Range(0.1f, 50)]
+  [Tooltip("Factor to handle pressure impact to reach target density")]
+  public float PressureMultiplier = 1.0f;
 }

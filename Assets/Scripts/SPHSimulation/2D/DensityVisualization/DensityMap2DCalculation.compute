@@ -10,6 +10,9 @@ float2 Resolution;
 float OrthographicSize;
 float AspectRatio;
 bool RenderGradient;
+float4 ZeroPressureColor;
+float4 PositivePressureColor;
+float4 NegativePressureColor;
 
 RWTexture2D<float4> RenderTexture;
 
@@ -25,29 +28,22 @@ float2 PixelToWorldPosition(uint2 pixelPos)
     return float2(x, y);
 }
 
-float4 DensityToColor(float density, float radius)
+float4 DensityToColor(float density)
 {
-    float3 color = float3(0, 1, 1);
-    float alpha = 0.0f;
-
-    if (density <= 0.0f)
+    float4 color = ZeroPressureColor;
+    float densityDifference = density - TargetDensity;
+    float t = density / TargetDensity;
+    
+    if (densityDifference < 0)
     {
-        color = float3(0, 0, 0);
-        alpha = 0.0f;
+        color = lerp(NegativePressureColor, ZeroPressureColor, t);
     }
-    else if (density < radius)
+    else if (densityDifference > 0)
     {
-        float t = density / radius;
-        color = lerp(float3(0, 0, 1), float3(0, 1, 1), t);
-        alpha = t;
+        color = lerp(ZeroPressureColor, PositivePressureColor, t);
     }
-    else
-    {
-        color = float3(0, 1, 1);
-        alpha = 1.0f;
-    }
-
-    return float4(color, alpha);
+    
+    return color;
 }
 
 float GetDensity(float2 worldPos)
@@ -94,7 +90,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     }
     else
     {
-        color = DensityToColor(density, KernelRadius);
+        color = DensityToColor(density);
     }
     
     RenderTexture[id.xy] = color;

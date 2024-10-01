@@ -31,6 +31,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   protected int _simulationKernelIdx;
   protected int _densityKernelIdx;
+  protected int _pressureForceKernelIdx;
 
   private bool _isPaused = false;
   private bool _pauseNextFrame = false;
@@ -40,6 +41,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
     // Compute shader IDs
     _simulationKernelIdx = _compute.FindKernel("Simulate");
     _densityKernelIdx = _compute.FindKernel("CalculateDensity");
+    _pressureForceKernelIdx = _compute.FindKernel("CalculatePressureForce");
 
     int positionBufferID = Shader.PropertyToID("Positions");
     int velocityBufferID = Shader.PropertyToID("Velocities");
@@ -58,9 +60,9 @@ public abstract class SPHSystem<T> : MonoBehaviour
     InitBuffers();
     FillBuffers(ref spawnData);
 
-    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx, _densityKernelIdx);
-    ComputeHelper.SetBuffer(_compute, Velocities, velocityBufferID, _simulationKernelIdx);
-    ComputeHelper.SetBuffer(_compute, Densities, densityBufferID, _simulationKernelIdx, _densityKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx, _densityKernelIdx, _pressureForceKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Velocities, velocityBufferID, _simulationKernelIdx, _pressureForceKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Densities, densityBufferID, _simulationKernelIdx, _densityKernelIdx, _pressureForceKernelIdx);
 
     _compute.SetInt(particleCountID, ParticleCount);
 
@@ -114,6 +116,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
     for (int i = 0; i < _properties.IterationsPerFrame; i++)
     {
       ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _densityKernelIdx);
+      ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _pressureForceKernelIdx);
       ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _simulationKernelIdx);
     }
   }
@@ -124,6 +127,8 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
     _compute.SetFloat("TimeStep", timeStep);
     _compute.SetFloat("KernelRadius", _properties.KernelRadius);
+    _compute.SetFloat("TargetDensity", _properties.TargetDensity);
+    _compute.SetFloat("PressureMultiplier", _properties.PressureMultiplier);
     _compute.SetVector("Gravity", _properties.Gravity);
     _compute.SetFloat("BoundaryDampening", _properties.BoundaryDampening);
   }
