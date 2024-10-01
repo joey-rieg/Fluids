@@ -38,13 +38,13 @@ float4 DensityToColor(float density)
     if (density < TargetDensity)
     {
         float t = smoothstep(-1.0, 0.0, normalizedDiff);
-        float3 color = lerp(NegativePressureColor, ZeroPressureColor, t);
+        float3 color = lerp(NegativePressureColor.rgb, ZeroPressureColor.rgb, t);
         return float4(color, 1.0);
     }
     else
     {
         float t = smoothstep(0.0, 1.0, normalizedDiff); // t in [0,1] as density exceeds target
-        float3 color = lerp(ZeroPressureColor, PositivePressureColor, t);
+        float3 color = lerp(ZeroPressureColor.rgb, PositivePressureColor.rgb, t);
         return float4(color, 1.0);
     }
 }

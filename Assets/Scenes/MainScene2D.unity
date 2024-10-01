@@ -511,7 +511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  _particleScale: 0.2
+  _particleScale: 0.1
   _material: {fileID: 2100000, guid: b0ad9e9c68c486949a41104c0d9fe965, type: 2}
 --- !u!1 &1402251166
 GameObject:

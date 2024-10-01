@@ -115,7 +115,7 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
     // F = m * a => a = F / m
     float2 acceleration = pressureForce / density;
     
-    Velocities[id.x] = acceleration * TimeStep;
+    Velocities[id.x] += acceleration * TimeStep;
 }
 
 [numthreads(64, 1, 1)]
