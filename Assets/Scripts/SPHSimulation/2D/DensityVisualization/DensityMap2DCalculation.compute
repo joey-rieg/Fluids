@@ -30,20 +30,23 @@ float2 PixelToWorldPosition(uint2 pixelPos)
 
 float4 DensityToColor(float density)
 {
-    float4 color = ZeroPressureColor;
-    float densityDifference = density - TargetDensity;
-    float t = density / TargetDensity;
+    float diff = density - TargetDensity;
     
-    if (densityDifference < 0)
-    {
-        color = lerp(NegativePressureColor, ZeroPressureColor, t);
-    }
-    else if (densityDifference > 0)
-    {
-        color = lerp(ZeroPressureColor, PositivePressureColor, t);
-    }
+    // Create a normalized value for blending (-1 for far below, 1 for far above)
+    float normalizedDiff = diff / TargetDensity;
     
-    return color;
+    if (density < TargetDensity)
+    {
+        float t = smoothstep(-1.0, 0.0, normalizedDiff);
+        float3 color = lerp(NegativePressureColor, ZeroPressureColor, t);
+        return float4(color, 1.0);
+    }
+    else
+    {
+        float t = smoothstep(0.0, 1.0, normalizedDiff); // t in [0,1] as density exceeds target
+        float3 color = lerp(ZeroPressureColor, PositivePressureColor, t);
+        return float4(color, 1.0);
+    }
 }
 
 float GetDensity(float2 worldPos)

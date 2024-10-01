@@ -18,4 +18,4 @@ MonoBehaviour:
   BoundaryDampening: 0.95
   KernelRadius: 1.2
   TargetDensity: 2.75
-  PressureMultiplier: 25
+  PressureMultiplier: 91

@@ -493,7 +493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _compute: {fileID: 7200000, guid: a2dcfaac66b0cc144be69028cec4e78b, type: 3}
-  _spawner: {fileID: 1402251167}
+  _spawner: {fileID: 1402251170}
   _renderer: {fileID: 1104116087}
   <Boundary>k__BackingField: {fileID: 1992801866}
   _properties: {fileID: 11400000, guid: cd63996f1dd4fb648bf70cf1b18d0664, type: 2}
@@ -522,7 +522,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1402251168}
-  - component: {fileID: 1402251167}
+  - component: {fileID: 1402251170}
   m_Layer: 0
   m_Name: SPHSpawner
   m_TagString: Untagged
@@ -530,23 +530,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1402251167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402251166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _particlesPerDimension: 20
-  _size: 9
-  _showBounds: 1
-  _boundsColor: {r: 0, g: 1, b: 0, a: 1}
-  _randomize: 1
 --- !u!4 &1402251168
 Transform:
   m_ObjectHideFlags: 0
@@ -562,6 +545,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1402251170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402251166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2698ae32303e29f45b5dd0d2648f1247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particlesPerDimension: 40
+  _size: 16
+  _showBounds: 1
+  _boundsColor: {r: 0, g: 1, b: 0, a: 1}
+  _randomize: 1
+  _particlesPerDimensionY: 10
+  _sizeY: 9
 --- !u!1 &1992801864
 GameObject:
   m_ObjectHideFlags: 0
