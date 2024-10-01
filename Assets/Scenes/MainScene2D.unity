@@ -263,7 +263,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f90524a2b7549f9429fe09c84cdf26d1, type: 3}
   m_Name: 
@@ -275,7 +275,7 @@ MonoBehaviour:
   _zeroPressureColor: {r: 1, g: 1, b: 1, a: 1}
   _positivePressureColor: {r: 0.8396226, g: 0.30633166, b: 0.2653524, a: 1}
   _negativePressureColor: {r: 0.2946778, g: 0.68607634, b: 0.8113208, a: 1}
-  _isRendering: 1
+  _isRendering: 0
   _renderGradient: 0
 --- !u!1 &410087039
 GameObject:
@@ -493,7 +493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _compute: {fileID: 7200000, guid: a2dcfaac66b0cc144be69028cec4e78b, type: 3}
-  _spawner: {fileID: 1402251170}
+  _spawner: {fileID: 1402251169}
   _renderer: {fileID: 1104116087}
   <Boundary>k__BackingField: {fileID: 1992801866}
   _properties: {fileID: 11400000, guid: cd63996f1dd4fb648bf70cf1b18d0664, type: 2}
@@ -522,7 +522,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1402251168}
-  - component: {fileID: 1402251170}
+  - component: {fileID: 1402251169}
   m_Layer: 0
   m_Name: SPHSpawner
   m_TagString: Untagged
@@ -539,13 +539,13 @@ Transform:
   m_GameObject: {fileID: 1402251166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.19, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1402251170
+--- !u!114 &1402251169
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -554,16 +554,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1402251166}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2698ae32303e29f45b5dd0d2648f1247, type: 3}
+  m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlesPerDimension: 40
-  _size: 16
+  _particlesPerDimension: 50
+  _size: 6
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
-  _randomize: 1
-  _particlesPerDimensionY: 10
-  _sizeY: 9
+  _randomize: 0
 --- !u!1 &1992801864
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,9 +29,12 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   public int ParticleCount { get; private set; }
 
-  protected int _simulationKernelIdx;
+  protected ComputeBuffer _predictedPositions;
+
+  protected int _predictedPositionsKernelIdx;
   protected int _densityKernelIdx;
   protected int _pressureForceKernelIdx;
+  protected int _simulationKernelIdx;
 
   private bool _isPaused = false;
   private bool _pauseNextFrame = false;
@@ -39,11 +42,13 @@ public abstract class SPHSystem<T> : MonoBehaviour
   void Start()
   {
     // Compute shader IDs
-    _simulationKernelIdx = _compute.FindKernel("Simulate");
+    _predictedPositionsKernelIdx = _compute.FindKernel("CalculatePredictedPositions");
     _densityKernelIdx = _compute.FindKernel("CalculateDensity");
     _pressureForceKernelIdx = _compute.FindKernel("CalculatePressureForce");
+    _simulationKernelIdx = _compute.FindKernel("Simulate");
 
     int positionBufferID = Shader.PropertyToID("Positions");
+    int predictedPositionsBufferID = Shader.PropertyToID("PredictedPositions");
     int velocityBufferID = Shader.PropertyToID("Velocities");
     int densityBufferID = Shader.PropertyToID("Densities");
     int particleCountID = Shader.PropertyToID("ParticleCount");
@@ -60,9 +65,10 @@ public abstract class SPHSystem<T> : MonoBehaviour
     InitBuffers();
     FillBuffers(ref spawnData);
 
-    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx, _densityKernelIdx, _pressureForceKernelIdx);
-    ComputeHelper.SetBuffer(_compute, Velocities, velocityBufferID, _simulationKernelIdx, _pressureForceKernelIdx);
-    ComputeHelper.SetBuffer(_compute, Densities, densityBufferID, _simulationKernelIdx, _densityKernelIdx, _pressureForceKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Positions, positionBufferID, _simulationKernelIdx, _predictedPositionsKernelIdx);
+    ComputeHelper.SetBuffer(_compute, _predictedPositions, predictedPositionsBufferID, _predictedPositionsKernelIdx, _densityKernelIdx, _pressureForceKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Velocities, velocityBufferID, _simulationKernelIdx, _predictedPositionsKernelIdx, _pressureForceKernelIdx);
+    ComputeHelper.SetBuffer(_compute, Densities, densityBufferID, _densityKernelIdx, _pressureForceKernelIdx);
 
     _compute.SetInt(particleCountID, ParticleCount);
 
@@ -72,14 +78,14 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   void OnDestroy()
   {
-    ComputeHelper.Release(Positions, Velocities, Densities);
+    ComputeHelper.Release(Positions, _predictedPositions, Velocities, Densities);
   }
 
   void Update()
   {
     if (!_stepWiseSimulation && Time.frameCount > 10)
     {
-      RunSimulationStep(Time.deltaTime);      
+      RunSimulationStep(Time.deltaTime);
     }
 
     if (_pauseNextFrame)
@@ -115,6 +121,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
     for (int i = 0; i < _properties.IterationsPerFrame; i++)
     {
+      ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _predictedPositionsKernelIdx);
       ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _densityKernelIdx);
       ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _pressureForceKernelIdx);
       ComputeHelper.Dispatch(_compute, ParticleCount, 1, 1, _simulationKernelIdx);
