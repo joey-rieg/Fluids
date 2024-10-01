@@ -4,15 +4,37 @@ static const float PI = 3.14159265f;
 
 float Poly6Kernel(float distance, float radius)
 {
-    float influence = 0;
+    // Shows warning of potentially uninitialized variable
+    // TODO: figure out a better way than how Spiky Kernel is implemented
+    if (distance >= radius)
+        return 0;
+    
     float volume = PI * pow(radius, 8) / 4;
-        
-    if (volume > 0.0)
+    float value = max(0, radius * radius - distance * distance);
+    
+    return value * value * value / volume;    
+}
+
+float SpikyKernel(float distance, float radius)
+{
+    float result = 0;
+    if (distance < radius)
     {
-        float value = max(0, radius * radius - distance * distance);
-    
-        influence = value * value * value / volume;
+        float value = radius - distance;
+        float volume = (PI * pow(radius, 4) / 6);
+        
+        result = value * value / volume;
     }
+
+    return result;
+}
+
+float SpikyKernelDerivative(float distance, float radius)
+{
+    if (distance >= radius)
+        return 0;
     
-    return influence;
+    float value = radius - distance;
+        
+    return -value / (PI * pow(radius, 4) / 12);    
 }

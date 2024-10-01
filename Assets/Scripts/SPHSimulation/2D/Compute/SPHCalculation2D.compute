@@ -1,14 +1,47 @@
-#pragma kernel CSMain
+#pragma kernel Simulate
+#pragma kernel CalculateDensity
+#pragma kernel CalculatePressureForce
+
+#include "../Compute/SPHMath2D.hlsl"
 
 RWStructuredBuffer<float2> Positions;
 RWStructuredBuffer<float2> Velocities;
+RWStructuredBuffer<float> Densities;
 
 const uint ParticleCount;
-const float2 BoundaryCenter;
-const float2 BoundarySize;
+const float KernelRadius;
+const float TargetDensity;
+const float PressureMultiplier;
 const float2 Gravity;
 const float TimeStep;
+const float2 BoundaryCenter;
+const float2 BoundarySize;
 const float BoundaryDampening;
+
+float DensityKernel(float distance)
+{
+    return SpikyKernel(distance, KernelRadius);
+}
+
+float DensityDerivative(float distance)
+{
+    return SpikyKernelDerivative(distance, KernelRadius);
+}
+
+float PressureFromDensity(float density)
+{    
+    float pressure = (density - TargetDensity) * PressureMultiplier;
+    
+    return pressure;    
+}
+
+float CalculateSharedPressure(float densityA, float densityB)
+{
+    float pressureA = PressureFromDensity(densityA);
+    float pressureB = PressureFromDensity(densityB);
+    
+    return (pressureA + pressureB) * 0.5;
+}
 
 void ResolveCollision(uint particleID)
 {
@@ -36,9 +69,59 @@ void ResolveCollision(uint particleID)
 }
 
 [numthreads(64, 1, 1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
+void CalculateDensity(uint3 id : SV_DispatchThreadID)
 {
-    if (id.x > ParticleCount - 1)
+    if (id.x >= ParticleCount)
+        return;
+    
+    float density = 0;
+    for (uint i = 0; i < ParticleCount; i++)
+    {        
+        float distance = length(Positions[i] - Positions[id.x]);
+                
+        density += DensityKernel(distance);
+    }
+
+    Densities[id.x] = density;
+}
+
+[numthreads(64, 1, 1)]
+void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= ParticleCount)
+        return;
+    
+    float density = Densities[id.x];
+    float pressure = PressureFromDensity(density);
+    float2 pressureForce = 0;
+    float2 position = Positions[id.x];
+    
+    for (uint i = 0; i < ParticleCount; i++)
+    {
+        // No influence when comparing to the same particle
+        if (id.x == i)
+            continue;
+        
+        float2 direction = Positions[i] - position;
+        float distance = length(direction);
+        
+        direction = distance == 0 ? float2(0,1) : direction / distance;
+        
+        float sharedPressure = CalculateSharedPressure(density, Densities[i]);
+        
+        pressureForce += direction * DensityDerivative(distance) * sharedPressure;
+    }
+    
+    // F = m * a => a = F / m
+    float2 acceleration = pressureForce / density;
+    
+    Velocities[id.x] += acceleration * TimeStep;
+}
+
+[numthreads(64, 1, 1)]
+void Simulate(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= ParticleCount)
         return;
         
     Velocities[id.x] += Gravity * TimeStep;

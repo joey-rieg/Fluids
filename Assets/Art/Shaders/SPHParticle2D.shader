@@ -2,6 +2,10 @@
 
 Shader "SPH/SPHParticle2D"
 {
+    Properties
+    {
+        ParticleColor ("ParticleColor", Color) = (1,1,1,1)
+    }
     SubShader
     {
         Tags { "RenderType"="Transparent" "Queue"= "Transparent" }
@@ -21,6 +25,7 @@ Shader "SPH/SPHParticle2D"
             StructuredBuffer<float2> Positions;
             float4x4 LocalTransform;
             float Scale;
+            float4 ParticleColor;
 
             struct v2f
             {
@@ -42,7 +47,7 @@ Shader "SPH/SPHParticle2D"
                 o.vertex = mul(UNITY_MATRIX_VP, float4(wPos, 1));
                 
                 //o.color = float4(lerp(0, 1, instanceID / (float)instanceCount), 0, 1, 1);
-                o.color = float4(1, 1, 1, 1);
+                o.color = ParticleColor;
                 o.uv = v.texcoord;
                 return o;
             }

@@ -16,7 +16,19 @@ public class DensityRenderer : MonoBehaviour
   private SPHSystemProperties _properties;
 
   [SerializeField]
+  private Color _zeroPressureColor;
+
+  [SerializeField]
+  private Color _positivePressureColor;
+
+  [SerializeField]
+  private Color _negativePressureColor;
+
+  [SerializeField]
   private bool _isRendering;
+
+  [SerializeField]
+  private bool _renderGradient = false;
 
   private int _kernelIdx;
   private int _positionsID;
@@ -46,7 +58,7 @@ public class DensityRenderer : MonoBehaviour
 
   void Update()
   {
-    if (!_isRendering)
+    if (!_isRendering && !_simulation.didStart)
       return;
 
     if (!_isInitialized)
@@ -113,5 +125,10 @@ public class DensityRenderer : MonoBehaviour
     _shader.SetFloat("OrthographicSize", _camera.orthographicSize);
     _shader.SetFloat("AspectRatio", _camera.aspect);
     _shader.SetFloat("TargetDensity", _properties.TargetDensity);
+    _shader.SetBool("RenderGradient", _renderGradient);
+
+    _shader.SetVector("ZeroPressureColor", _zeroPressureColor);
+    _shader.SetVector("PositivePressureColor", _positivePressureColor);
+    _shader.SetVector("NegativePressureColor", _negativePressureColor);
   }
 }
