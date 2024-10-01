@@ -18,7 +18,7 @@ void CSMain(uint3 id : SV_DispatchThreadID, uint3 group : SV_GroupID, uint3 grou
     if (idx < ParticleCount)
     {
         float distance = length(Positions[idx] - KernelCenter);
-        sharedInfluenceMemory[groupThread.x] = Poly6Kernel(distance, KernelRadius);
+        sharedInfluenceMemory[groupThread.x] = SpikyKernel(distance, KernelRadius);
     }
     else
     {
