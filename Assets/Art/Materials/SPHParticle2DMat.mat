@@ -26,6 +26,6 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - ParticleColor: {r: 0, g: 0, b: 0, a: 1}
+    - ParticleColor: {r: 0.051886797, g: 0.4892147, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

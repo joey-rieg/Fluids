@@ -1,10 +1,12 @@
 #pragma kernel Simulate
+#pragma kernel CalculatePredictedPositions
 #pragma kernel CalculateDensity
 #pragma kernel CalculatePressureForce
 
 #include "../Compute/SPHMath2D.hlsl"
 
 RWStructuredBuffer<float2> Positions;
+RWStructuredBuffer<float2> PredictedPositions;
 RWStructuredBuffer<float2> Velocities;
 RWStructuredBuffer<float> Densities;
 
@@ -69,6 +71,17 @@ void ResolveCollision(uint particleID)
 }
 
 [numthreads(64, 1, 1)]
+void CalculatePredictedPositions(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= ParticleCount)
+        return;
+    
+    Velocities[id.x] += Gravity * TimeStep;
+    float lookAheadTimeStep = 1 / 120.0f;
+    PredictedPositions[id.x] = Positions[id.x] + Velocities[id.x] * lookAheadTimeStep;
+}
+
+[numthreads(64, 1, 1)]
 void CalculateDensity(uint3 id : SV_DispatchThreadID)
 {
     if (id.x >= ParticleCount)
@@ -77,7 +90,7 @@ void CalculateDensity(uint3 id : SV_DispatchThreadID)
     float density = 0;
     for (uint i = 0; i < ParticleCount; i++)
     {        
-        float distance = length(Positions[i] - Positions[id.x]);
+        float distance = length(PredictedPositions[i] - PredictedPositions[id.x]);
                 
         density += DensityKernel(distance);
     }
@@ -94,7 +107,7 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
     float density = Densities[id.x];
     float pressure = PressureFromDensity(density);
     float2 pressureForce = 0;
-    float2 position = Positions[id.x];
+    float2 position = PredictedPositions[id.x];
     
     for (uint i = 0; i < ParticleCount; i++)
     {
@@ -102,7 +115,7 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
         if (id.x == i)
             continue;
         
-        float2 direction = Positions[i] - position;
+        float2 direction = PredictedPositions[i] - position;
         float distance = length(direction);
         
         direction = distance == 0 ? float2(0,1) : direction / distance;

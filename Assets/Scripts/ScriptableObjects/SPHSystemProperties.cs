@@ -21,11 +21,11 @@ public class SPHSystemProperties : ScriptableObject
   [Tooltip("Influence radius")]
   public float KernelRadius = 1.0f;
 
-  [Range(0.0f, 20.0f)]
+  [Range(0.0f, 100.0f)]
   [Tooltip("Target density the fluid wants to reach")]
   public float TargetDensity = 1.0f;
 
-  [Range(0.1f, 500)]
+  [Range(0.1f, 1000)]
   [Tooltip("Factor to handle pressure impact to reach target density")]
   public float PressureMultiplier = 1.0f;
 }
