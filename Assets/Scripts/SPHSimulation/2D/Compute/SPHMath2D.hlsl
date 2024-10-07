@@ -21,9 +21,9 @@ float SpikyKernel(float distance, float radius)
     if (distance < radius)
     {
         float value = radius - distance;
-        float volume = (PI * pow(radius, 4) / 6);
+        float volume = 6 / (PI * pow(radius, 4));
         
-        result = value * value / volume;
+        result = value * value * volume;
     }
 
     return result;
@@ -36,5 +36,5 @@ float SpikyKernelDerivative(float distance, float radius)
     
     float value = radius - distance;
         
-    return -value / (PI * pow(radius, 4) / 12);    
+    return -value * (12 / (PI * pow(radius, 4)));
 }
