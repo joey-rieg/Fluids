@@ -513,6 +513,38 @@ MonoBehaviour:
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _particleScale: 0.1
   _material: {fileID: 2100000, guid: b0ad9e9c68c486949a41104c0d9fe965, type: 2}
+  _maxVelocity: 5
+  _gradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0.058888305, b: 0.8207547, a: 1}
+    key1: {r: 0, g: 0.8679245, b: 0.39208865, a: 1}
+    key2: {r: 0.8396226, g: 0.76019883, b: 0, a: 0}
+    key3: {r: 0.8207547, g: 0.08564397, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 9638
+    ctime1: 32960
+    ctime2: 47802
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  _gradientResolution: 64
 --- !u!1 &1402251166
 GameObject:
   m_ObjectHideFlags: 0
