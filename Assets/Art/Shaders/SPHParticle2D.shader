@@ -1,10 +1,8 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 Shader "SPH/SPHParticle2D"
 {
     Properties
     {
-        ParticleColor ("ParticleColor", Color) = (1,1,1,1)
+        MaxVelocity ("MaxVelocity", Float) = 100.0
     }
     SubShader
     {
@@ -23,15 +21,18 @@ Shader "SPH/SPHParticle2D"
             #include "UnityIndirect.cginc"
 
             StructuredBuffer<float2> Positions;
+            StructuredBuffer<float2> Velocities;
+            Texture2D<float4> GradientTexture;
+            SamplerState linear_clamp_sampler;
             float4x4 LocalTransform;
             float Scale;
-            float4 ParticleColor;
+            float MaxVelocity;
 
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                float4 uv : TEXCOORD0;  
-                float4 color : COLOR0;
+                float2 uv : TEXCOORD0;
+                float3 color: TEXCOORD1;
             };
 
             v2f vert (appdata_base v, uint svInstanceID : SV_InstanceID)
@@ -43,11 +44,12 @@ Shader "SPH/SPHParticle2D"
                 int instanceCount = GetIndirectInstanceCount();
 
                 float3 wPos = float3(Positions[instanceID].xy, 0) + mul(LocalTransform, v.vertex * Scale);
-
-                o.vertex = mul(UNITY_MATRIX_VP, float4(wPos, 1));
+                float velocity = length(Velocities[instanceID]);
+                float velT = saturate(velocity / MaxVelocity);
                 
+                o.vertex = mul(UNITY_MATRIX_VP, float4(wPos, 1));
                 //o.color = float4(lerp(0, 1, instanceID / (float)instanceCount), 0, 1, 1);
-                o.color = ParticleColor;
+                o.color = GradientTexture.SampleLevel(linear_clamp_sampler, float2(velT, 0.5), 0);
                 o.uv = v.texcoord;
                 return o;
             }
@@ -58,7 +60,7 @@ Shader "SPH/SPHParticle2D"
                 float dst = sqrt(dot(centeredUVs, centeredUVs));
                 float alpha = step(dst, 1);
                 
-                return float4(i.color.xyz, alpha);
+                return float4(i.color, alpha);
             }
             ENDCG
         }

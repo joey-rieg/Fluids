@@ -17,5 +17,5 @@ MonoBehaviour:
   Gravity: {x: 0, y: -9.4, z: 0}
   BoundaryDampening: 0.95
   KernelRadius: 0.35
-  TargetDensity: 50.2
-  PressureMultiplier: 30
+  TargetDensity: 56.7
+  PressureMultiplier: 15
