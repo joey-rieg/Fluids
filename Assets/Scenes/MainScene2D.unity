@@ -511,9 +511,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  _particleScale: 0.1
+  _particleScale: 0.08
   _material: {fileID: 2100000, guid: b0ad9e9c68c486949a41104c0d9fe965, type: 2}
-  _maxVelocity: 5
+  _maxVelocity: 6
   _gradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.058888305, b: 0.8207547, a: 1}
@@ -571,7 +571,7 @@ Transform:
   m_GameObject: {fileID: 1402251166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.72, z: 0}
+  m_LocalPosition: {x: -0.22, y: 0.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -589,8 +589,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea2f686b4bd60e46bbfa6d1c2de6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlesPerDimension: 63
+  _particlesPerDimension: 65
   _size: 7
+  _jitter: 0.025
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
   _randomize: 0

@@ -2,18 +2,21 @@
 #pragma kernel CalculatePredictedPositions
 #pragma kernel CalculateDensity
 #pragma kernel CalculatePressureForce
+#pragma kernel CalculateViscosity
 
 #include "../Compute/SPHMath2D.hlsl"
 
 RWStructuredBuffer<float2> Positions;
 RWStructuredBuffer<float2> PredictedPositions;
 RWStructuredBuffer<float2> Velocities;
-RWStructuredBuffer<float> Densities;
+RWStructuredBuffer<float2> Densities;
 
 const uint ParticleCount;
 const float KernelRadius;
 const float TargetDensity;
 const float PressureMultiplier;
+const float NearPressureMultiplier;
+const float ViscosityMultiplier;
 const float2 Gravity;
 const float TimeStep;
 const float2 BoundaryCenter;
@@ -22,27 +25,38 @@ const float BoundaryDampening;
 
 float DensityKernel(float distance)
 {
-    return SpikyKernel(distance, KernelRadius);
+    return SpikyKernelPow2(distance, KernelRadius);
 }
 
 float DensityDerivative(float distance)
 {
-    return SpikyKernelDerivative(distance, KernelRadius);
+    return SpikyKernelPow2Derivative(distance, KernelRadius);
+}
+
+float NearDensityKernel(float distance)
+{
+    return SpikyKernelPow3(distance, KernelRadius);
+}
+
+float NearDensityKernelDerivative(float distance)
+{
+    return SpikyKernelPow3Derivative(distance, KernelRadius);
+}
+
+float ViscosityKernel(float distance)
+{
+    return Poly6Kernel(distance, KernelRadius);
 }
 
 float PressureFromDensity(float density)
 {    
-    float pressure = (density - TargetDensity) * PressureMultiplier;
-    
-    return pressure;    
+    return (density - TargetDensity) * PressureMultiplier;   
 }
 
-float CalculateSharedPressure(float densityA, float densityB)
+float NearPressureFromDensity(float nearDensity)
 {
-    float pressureA = PressureFromDensity(densityA);
-    float pressureB = PressureFromDensity(densityB);
-    
-    return (pressureA + pressureB) * 0.5;
+    return nearDensity * NearPressureMultiplier;
+
 }
 
 void ResolveCollision(uint particleID)
@@ -87,15 +101,22 @@ void CalculateDensity(uint3 id : SV_DispatchThreadID)
     if (id.x >= ParticleCount)
         return;
     
+    float2 position = PredictedPositions[id.x];
     float density = 0;
+    float nearDensity = 0;
     for (uint i = 0; i < ParticleCount; i++)
     {        
-        float distance = length(PredictedPositions[i] - PredictedPositions[id.x]);
-                
+        float distance = length(PredictedPositions[i] - position);
+        
+        if (distance > KernelRadius)
+            continue;
+        
         density += DensityKernel(distance);
+        nearDensity += NearDensityKernel(distance);
     }
 
-    Densities[id.x] = density;
+    Densities[id.x][0] = density;
+    Densities[id.x][1] = nearDensity;    
 }
 
 [numthreads(64, 1, 1)]
@@ -104,8 +125,10 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
     if (id.x >= ParticleCount)
         return;
     
-    float density = Densities[id.x];
+    float density = Densities[id.x][0];
+    float nearDensity = Densities[id.x][1];
     float pressure = PressureFromDensity(density);
+    float nearPressure = NearPressureFromDensity(nearDensity);
     float2 pressureForce = 0;
     float2 position = PredictedPositions[id.x];
     
@@ -118,17 +141,55 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
         float2 direction = PredictedPositions[i] - position;
         float distance = length(direction);
         
-        direction = distance == 0 ? float2(0,1) : direction / distance;
+        if (distance > KernelRadius)
+            continue;
         
-        float sharedPressure = CalculateSharedPressure(density, Densities[i]);
+        direction = distance > 0 ? direction/distance : float2(0, 1);
         
-        pressureForce += direction * DensityDerivative(distance) * sharedPressure;
+        float otherDensity = Densities[i][0];
+        float otherNearDensity = Densities[i][1];
+        float otherPressure = PressureFromDensity(otherDensity);
+        float otherNearPressure = NearPressureFromDensity(otherNearDensity);
+        
+        float sharedPressure = (pressure + otherPressure) * 0.5;
+        float sharedNearPressure = (nearPressure + otherNearPressure) * 0.5;
+        
+        pressureForce += direction * DensityDerivative(distance) * sharedPressure / otherDensity;
+        pressureForce += direction * NearDensityKernelDerivative(distance) * sharedNearPressure / otherNearDensity;
     }
     
     // F = m * a => a = F / m
     float2 acceleration = pressureForce / density;
-    
+       
     Velocities[id.x] += acceleration * TimeStep;
+}
+
+[numthreads(64, 1, 1)]
+void CalculateViscosity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= ParticleCount)
+        return;
+    
+    float2 position = PredictedPositions[id.x];
+    float2 velocity = Velocities[id.x];
+    
+    float2 viscosityForce = float2(0, 0);
+    for (uint i = 0; i < ParticleCount; i++)
+    {
+        if (id.x == i)
+            continue;
+        
+        float distance = length(position - PredictedPositions[i]);
+        
+        if (distance > KernelRadius)
+            continue;
+        
+        float2 otherVelocity = Velocities[i];
+        
+        viscosityForce += (otherVelocity - velocity) * ViscosityKernel(distance);
+    }
+
+    Velocities[id.x] += viscosityForce * ViscosityMultiplier * TimeStep;
 }
 
 [numthreads(64, 1, 1)]
@@ -136,7 +197,7 @@ void Simulate(uint3 id : SV_DispatchThreadID)
 {
     if (id.x >= ParticleCount)
         return;
-        
+    
     Velocities[id.x] += Gravity * TimeStep;
     Positions[id.x] += Velocities[id.x] * TimeStep;
     

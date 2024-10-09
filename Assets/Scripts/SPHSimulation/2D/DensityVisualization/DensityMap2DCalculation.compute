@@ -59,7 +59,7 @@ float GetDensity(float2 worldPos)
         if (distance > KernelRadius)
             continue;
         
-        density += SpikyKernel(distance, KernelRadius);
+        density += SpikyKernelPow2(distance, KernelRadius);
     }
     
     return density;

@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: SPHSystemProperties
   m_EditorClassIdentifier: 
   TimeScale: 1
-  IterationsPerFrame: 3
-  Gravity: {x: 0, y: -9.4, z: 0}
+  IterationsPerFrame: 4
+  Gravity: {x: 0, y: -9.81, z: 0}
   BoundaryDampening: 0.95
   KernelRadius: 0.35
-  TargetDensity: 56.7
-  PressureMultiplier: 15
+  TargetDensity: 43
+  PressureMultiplier: 500
+  NearPressureMultiplier: 0
+  ViscosityMultiplier: 0.06
