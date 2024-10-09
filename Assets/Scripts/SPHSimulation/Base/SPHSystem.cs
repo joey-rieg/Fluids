@@ -74,6 +74,8 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
     // Renderer initialization
     _renderer.Init(this);
+
+    _isPaused = _stepWiseSimulation;
   }
 
   void OnDestroy()

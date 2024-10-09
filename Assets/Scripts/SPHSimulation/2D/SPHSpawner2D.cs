@@ -23,10 +23,12 @@ public class SPHSpawner2D : SPHSpawner<Vector2>
         {
           float halfSize = 0.5f * _size;
           positions[i] = new Vector2(Random.Range(-halfSize, halfSize), Random.Range(-halfSize, halfSize)) + 
-            new Vector2(transformOffset.x, transformOffset.y);
+            new Vector2(transformOffset.x , transformOffset.y);
         }
         else
-          positions[i] = new Vector2((tx - 0.5f) * _size + transformOffset.x, (ty - 0.5f) * _size + transformOffset.y);
+          positions[i] = new Vector2((tx - 0.5f) * _size +  transformOffset.x, 
+                                     (ty - 0.5f) * _size + transformOffset.y)
+                                     + Random.insideUnitCircle * _jitter;
 
         velocities[i] = Vector2.zero;
 

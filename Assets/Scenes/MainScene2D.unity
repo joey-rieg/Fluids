@@ -591,6 +591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _particlesPerDimension: 63
   _size: 7
+  _jitter: 0.001
   _showBounds: 1
   _boundsColor: {r: 0, g: 1, b: 0, a: 1}
   _randomize: 0

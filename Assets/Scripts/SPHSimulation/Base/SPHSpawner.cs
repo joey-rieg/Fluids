@@ -17,6 +17,10 @@ public abstract class SPHSpawner<T> : MonoBehaviour
   protected float _size;
 
   [SerializeField]
+  [Tooltip("Jitter added on top of spawn positions")]
+  protected float _jitter = 0.001f;
+
+  [SerializeField]
   [Tooltip("Toggles bounds visualization on/off")]
   protected bool _showBounds = true;
 
