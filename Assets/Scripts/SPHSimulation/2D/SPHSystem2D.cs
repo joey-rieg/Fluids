@@ -6,7 +6,7 @@ public class SPHSystem2D : SPHSystem<Vector2>
   {
     Positions = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
     Velocities = new ComputeBuffer(ParticleCount, 2 * sizeof (float), ComputeBufferType.Structured);
-    Densities = new ComputeBuffer(ParticleCount, sizeof(float), ComputeBufferType.Structured);
+    Densities = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
     _predictedPositions = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
   }
 
