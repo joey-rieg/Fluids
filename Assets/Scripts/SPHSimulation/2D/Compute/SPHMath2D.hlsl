@@ -7,8 +7,8 @@ float Poly6Kernel(float distance, float radius)
     float result = 0;
     if (distance < radius)
     {
-        float value = max(0, radius * radius - distance * distance);
-        float volume = 4 / PI * pow(radius, 8);
+        float value = radius * radius - distance * distance;
+        float volume = 4 / (PI * pow(radius, 8));
         
         result = value * value * value * volume;
     }
@@ -36,7 +36,7 @@ float SpikyKernelPow2Derivative(float distance, float radius)
     if (distance < radius)
     {
         float value = radius - distance;
-        float volume = (12 / (PI * pow(radius, 4)));
+        float volume = 12 / (PI * pow(radius, 4));
         
         result = -value * volume;
     }
