@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,16 +14,24 @@ public class SPHSystem2D : SPHSystem<Vector2>
 
   void OnDrawGizmos()
   {
-    if (Application.isPlaying && Mouse.current.IsPressed())
+    if (Application.isPlaying)
     {
-      Gizmos.DrawWireSphere(Mouse.current.position.value, _interactionRadius);
+      bool isPull = Mouse.current.leftButton.isPressed;
+      bool isPush = Mouse.current.rightButton.isPressed;
+      if (isPull || isPush)
+      {
+        Vector2 position = Camera.main.ScreenToWorldPoint(Mouse.current.position.value);
+
+        Gizmos.color = isPush ? Color.red : Color.green;
+        Gizmos.DrawWireSphere(position, _interactionRadius);
+      }
     }
   }
 
   protected override void InitBuffers()
   {
     Positions = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
-    Velocities = new ComputeBuffer(ParticleCount, 2 * sizeof (float), ComputeBufferType.Structured);
+    Velocities = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
     Densities = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
     _predictedPositions = new ComputeBuffer(ParticleCount, 2 * sizeof(float), ComputeBufferType.Structured);
   }
@@ -48,10 +55,11 @@ public class SPHSystem2D : SPHSystem<Vector2>
     bool isPull = Mouse.current.leftButton.isPressed;
     bool isPush = Mouse.current.rightButton.isPressed;
 
-    if (isPush || isPull) {
+    if (isPush || isPull)
+    {
       Vector2 mousePos = Mouse.current.position.value;
       interactionStrength = isPush ? -_interactionStrength : _interactionStrength;
-      interactionCenter = Camera.main.ScreenToWorldPoint(mousePos);      
+      interactionCenter = Camera.main.ScreenToWorldPoint(mousePos);
     }
 
     _compute.SetVector("InteractionCenter", interactionCenter);
