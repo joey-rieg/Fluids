@@ -198,7 +198,6 @@ void Simulate(uint3 id : SV_DispatchThreadID)
     if (id.x >= ParticleCount)
         return;
     
-    Velocities[id.x] += Gravity * TimeStep;
     Positions[id.x] += Velocities[id.x] * TimeStep;
     
     ResolveCollision(id.x);
