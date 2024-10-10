@@ -19,4 +19,8 @@ public class SPHSystem3D : SPHSystem<Vector3>
     _compute.SetVector("BoundaryCenter", Boundary.Center);
     _compute.SetVector("BoundarySize", Boundary.Size);
   }
+
+  protected override void SetComputeExternalForces()
+  {
+  }
 }

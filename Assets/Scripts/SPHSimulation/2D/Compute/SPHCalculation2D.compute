@@ -22,6 +22,9 @@ const float TimeStep;
 const float2 BoundaryCenter;
 const float2 BoundarySize;
 const float BoundaryDampening;
+const float2 InteractionCenter;
+const float InteractionRadius;
+const float InteractionStrength;
 
 float DensityKernel(float distance)
 {
@@ -59,6 +62,31 @@ float NearPressureFromDensity(float nearDensity)
 
 }
 
+float2 ExternalForces(float2 position, float2 velocity)
+{
+    float2 externalForces = Gravity;
+    
+    if (InteractionStrength != 0)
+    {
+        float2 pointToCenterOffset = position - InteractionCenter;
+        float sqrDistance = dot(pointToCenterOffset, pointToCenterOffset);
+        if (sqrDistance < InteractionRadius * InteractionRadius)
+        {
+            float distance = sqrt(sqrDistance);
+            float2 direction = pointToCenterOffset / distance;
+            
+            float t = 1 - (distance / InteractionRadius);
+            
+            // Linear decay from center to radius for gravity influence
+            float gravityWeight = 1 - t;
+            
+            externalForces += Gravity * gravityWeight + direction * t * InteractionStrength;
+        }
+    }
+    
+    return externalForces;
+}
+
 void ResolveCollision(uint particleID)
 {
     float2 pos = Positions[particleID];
@@ -90,7 +118,8 @@ void CalculatePredictedPositions(uint3 id : SV_DispatchThreadID)
     if (id.x >= ParticleCount)
         return;
     
-    Velocities[id.x] += Gravity * TimeStep;
+    Velocities[id.x] += ExternalForces(Positions[id.x], Velocities[id.x]) * TimeStep;
+    
     float lookAheadTimeStep = 1 / 120.0f;
     PredictedPositions[id.x] = Positions[id.x] + Velocities[id.x] * lookAheadTimeStep;
 }
