@@ -498,6 +498,8 @@ MonoBehaviour:
   <Boundary>k__BackingField: {fileID: 1992801866}
   _properties: {fileID: 11400000, guid: cd63996f1dd4fb648bf70cf1b18d0664, type: 2}
   _stepWiseSimulation: 0
+  _interactionRadius: 2
+  _interactionStrength: 100
 --- !u!114 &1104116087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,7 +573,7 @@ Transform:
   m_GameObject: {fileID: 1402251166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.22, y: 0.53, z: 0}
+  m_LocalPosition: {x: 3.51, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

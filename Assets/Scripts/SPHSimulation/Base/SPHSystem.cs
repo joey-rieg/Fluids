@@ -115,6 +115,8 @@ public abstract class SPHSystem<T> : MonoBehaviour
 
   protected abstract void SetComputeBoundary();
 
+  protected abstract void SetComputeExternalForces();
+
   void RunSimulationStep(float timeStep)
   {
     float simulationStep = (timeStep / _properties.IterationsPerFrame) * _properties.TimeScale;
@@ -136,6 +138,7 @@ public abstract class SPHSystem<T> : MonoBehaviour
   private void SetComputeProperties(float timeStep)
   {
     SetComputeBoundary();
+    SetComputeExternalForces();
 
     _compute.SetFloat("TimeStep", timeStep);
     _compute.SetFloat("KernelRadius", _properties.KernelRadius);
