@@ -18,7 +18,7 @@ public class SPHSystem2D : SPHSystem<Vector2>
 
   [SerializeField]
   [Tooltip("Extents of the obstacle")]
-  private Vector2 _obstacleExtents;
+  private Vector2 _obstacleSize;
 
   void OnDrawGizmos()
   {
@@ -35,10 +35,10 @@ public class SPHSystem2D : SPHSystem<Vector2>
       }
     }
 
-    if (_obstacleExtents != Vector2.zero)
+    if (_obstacleSize != Vector2.zero)
     {
       Gizmos.color = Color.yellow;
-      Gizmos.DrawWireCube(_obstaclePosition, _obstacleExtents);
+      Gizmos.DrawWireCube(_obstaclePosition, _obstacleSize);
     }
   }
 
@@ -60,6 +60,9 @@ public class SPHSystem2D : SPHSystem<Vector2>
   {
     _compute.SetVector("BoundaryCenter", Boundary.Center);
     _compute.SetVector("BoundarySize", Boundary.Size);
+
+    _compute.SetVector("ObstaclePosition", _obstaclePosition);
+    _compute.SetVector("ObstacleSize", _obstacleSize);
   }
 
   protected override void SetComputeExternalForces()
