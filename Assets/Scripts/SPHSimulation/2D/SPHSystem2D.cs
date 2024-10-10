@@ -45,8 +45,8 @@ public class SPHSystem2D : SPHSystem<Vector2>
   {
     Vector2 interactionCenter = Vector2.zero;
     float interactionStrength = 0;
-    bool isPush = Mouse.current.leftButton.isPressed;
-    bool isPull = Mouse.current.rightButton.isPressed;
+    bool isPull = Mouse.current.leftButton.isPressed;
+    bool isPush = Mouse.current.rightButton.isPressed;
 
     if (isPush || isPull) {
       Vector2 mousePos = Mouse.current.position.value;

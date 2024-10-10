@@ -498,6 +498,8 @@ MonoBehaviour:
   <Boundary>k__BackingField: {fileID: 1992801866}
   _properties: {fileID: 11400000, guid: cd63996f1dd4fb648bf70cf1b18d0664, type: 2}
   _stepWiseSimulation: 0
+  _interactionRadius: 2
+  _interactionStrength: 100
 --- !u!114 &1104116087
 MonoBehaviour:
   m_ObjectHideFlags: 0

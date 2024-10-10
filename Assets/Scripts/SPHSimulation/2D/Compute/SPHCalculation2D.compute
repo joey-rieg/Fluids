@@ -68,7 +68,7 @@ float2 ExternalForces(float2 position, float2 velocity)
     
     if (InteractionStrength != 0)
     {
-        float2 pointToCenterOffset = position - InteractionCenter;
+        float2 pointToCenterOffset = InteractionCenter - position;
         float sqrDistance = dot(pointToCenterOffset, pointToCenterOffset);
         if (sqrDistance < InteractionRadius * InteractionRadius)
         {
@@ -78,9 +78,10 @@ float2 ExternalForces(float2 position, float2 velocity)
             float t = 1 - (distance / InteractionRadius);
             
             // Linear decay from center to radius for gravity influence
-            float gravityWeight = 1 - t;
+            float gravityWeight = 1 - (t * saturate(InteractionStrength / 10));
             
-            externalForces += Gravity * gravityWeight + direction * t * InteractionStrength;
+            externalForces = Gravity * gravityWeight + direction * t * InteractionStrength;
+            externalForces -= velocity * t;
         }
     }
     
