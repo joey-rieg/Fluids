@@ -25,6 +25,8 @@ const float BoundaryDampening;
 const float2 InteractionCenter;
 const float InteractionRadius;
 const float InteractionStrength;
+const float2 ObstaclePosition;
+const float2 ObstacleSize;
 
 float DensityKernel(float distance)
 {
@@ -52,8 +54,8 @@ float ViscosityKernel(float distance)
 }
 
 float PressureFromDensity(float density)
-{    
-    return (density - TargetDensity) * PressureMultiplier;   
+{
+    return (density - TargetDensity) * PressureMultiplier;
 }
 
 float NearPressureFromDensity(float nearDensity)
@@ -107,7 +109,40 @@ void ResolveCollision(uint particleID)
     {
         pos.y = BoundaryCenter.y + sign(pos.y - BoundaryCenter.y) * halfSize.y;
         vel.y *= -1.0 * BoundaryDampening;
-    }   
+    }
+    
+    //                                             absY
+    //          |--------------------------------|
+    //          |               |                |  0 >= halfSize - absY
+    //          |               |                |  -> project to surface
+    //          |-------------- X ---------------|  -> invert velocity with dampending
+    //          |               |                |
+    //          |               |                |
+    //          |--------------------------------|
+    //
+    //       Y'
+    //    
+    if (ObstacleSize.x >= 0 || ObstacleSize.y >= 0)
+    {
+        float2 obstacleHalfSize = ObstacleSize * 0.5f;
+        float2 absPos = abs(pos - ObstaclePosition);
+        float2 obstacleEdgeDistance = obstacleHalfSize - absPos;
+        
+        if (obstacleEdgeDistance.x >= 0 && obstacleEdgeDistance.y >= 0)
+        {
+            if (obstacleEdgeDistance.x < obstacleEdgeDistance.y)
+            {
+                pos.x = ObstaclePosition.x + sign(pos.x - ObstaclePosition.x) * obstacleHalfSize.x;
+                vel.x *= -1.0 * BoundaryDampening;
+            }
+            else
+            {
+                pos.y = ObstaclePosition.y + sign(pos.y - ObstaclePosition.y) * obstacleHalfSize.y;
+                vel.y *= -1.0 * BoundaryDampening;
+            }
+        }
+        
+    }
     
     Positions[particleID] = pos;
     Velocities[particleID] = vel;
@@ -135,7 +170,7 @@ void CalculateDensity(uint3 id : SV_DispatchThreadID)
     float density = 0;
     float nearDensity = 0;
     for (uint i = 0; i < ParticleCount; i++)
-    {        
+    {
         float distance = length(PredictedPositions[i] - position);
         
         if (distance > KernelRadius)
@@ -146,7 +181,7 @@ void CalculateDensity(uint3 id : SV_DispatchThreadID)
     }
 
     Densities[id.x][0] = density;
-    Densities[id.x][1] = nearDensity;    
+    Densities[id.x][1] = nearDensity;
 }
 
 [numthreads(64, 1, 1)]
@@ -174,7 +209,7 @@ void CalculatePressureForce(uint3 id : SV_DispatchThreadID)
         if (distance > KernelRadius)
             continue;
         
-        direction = distance > 0 ? direction/distance : float2(0, 1);
+        direction = distance > 0 ? direction / distance : float2(0, 1);
         
         float otherDensity = Densities[i][0];
         float otherNearDensity = Densities[i][1];
