@@ -12,6 +12,14 @@ public class SPHSystem2D : SPHSystem<Vector2>
   [Tooltip("Determines how much particles are influenced")]
   private float _interactionStrength = 10f;
 
+  [SerializeField]
+  [Tooltip("Position of the obstacle")]
+  private Vector2 _obstaclePosition;
+
+  [SerializeField]
+  [Tooltip("Extents of the obstacle")]
+  private Vector2 _obstacleExtents;
+
   void OnDrawGizmos()
   {
     if (Application.isPlaying)
@@ -25,6 +33,12 @@ public class SPHSystem2D : SPHSystem<Vector2>
         Gizmos.color = isPush ? Color.red : Color.green;
         Gizmos.DrawWireSphere(position, _interactionRadius);
       }
+    }
+
+    if (_obstacleExtents != Vector2.zero)
+    {
+      Gizmos.color = Color.yellow;
+      Gizmos.DrawWireCube(_obstaclePosition, _obstacleExtents);
     }
   }
 
