@@ -500,6 +500,8 @@ MonoBehaviour:
   _stepWiseSimulation: 0
   _interactionRadius: 2
   _interactionStrength: 100
+  _obstaclePosition: {x: -4.81, y: 0}
+  _obstacleSize: {x: 3.48, y: 6.92}
 --- !u!114 &1104116087
 MonoBehaviour:
   m_ObjectHideFlags: 0
