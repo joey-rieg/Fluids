@@ -3,10 +3,6 @@ using UnityEngine;
 
 public class RadixSort : SortingAlgorithm
 {
-  [Header("Algorithm Properties")]
-  [field:SerializeField]
-  public int Base { get; private set; }
-
   public List<int>[] Buckets { get; private set; }
   public int MaxValue { get; private set; }
   public int NumDigits { get; private set; }
@@ -19,31 +15,33 @@ public class RadixSort : SortingAlgorithm
   {
     int[] numbers = _values.Numbers;
 
-    Buckets = new List<int>[Base];
-    for (int i = 0; i < Base; i++)
+    // Hardcoded for now for performance reasons in base 2 scenarios
+    // Division for other bases is costly, but will be implemented to allow other bases.
+    // Idea: use bit shift if radix == 2, otherwise division
+    int radix = 2;
+
+    Buckets = new List<int>[radix];
+    for (int i = 0; i < radix; i++)
     {
       Buckets[i] = new List<int>();
     }
 
     MaxValue = GetMax();
-    NumDigits = Mathf.FloorToInt(Mathf.Log(MaxValue, Base)) + 1;
-    CurrentBitPosition = 0;
+    NumDigits = Mathf.FloorToInt(Mathf.Log(MaxValue, radix)) + 1;
 
-    // Loop over number of digits
     for (int i = 0; i < NumDigits; i++)
     {
-      for (int j = 0; j < _numValues; j++ )
+      for (int j = 0; j < _numValues; j++)
       {
-        int binary = numbers[j] & (int)Mathf.Pow(Base, CurrentBitPosition);
+        int num = numbers[j];
 
-        int bit = binary >> CurrentBitPosition;
-        Buckets[bit].Add(numbers[j]);
+        // i == bit shift (ith digit is wanted)
+        int bit = (num >> i) & 1;
+        Buckets[bit].Add(num);
       }
-      
-      CurrentBitPosition++;
 
       int arrayIdx = 0;
-      for (int k = 0; k < Base; k++)
+      for (int k = 0; k < radix; k++)
       {
         for (int l = 0; l < Buckets[k].Count; l++)
         {
@@ -54,15 +52,6 @@ public class RadixSort : SortingAlgorithm
     }
 
     return numbers;
-  }
-
-  protected override int[] SortNextStep()
-  {
-    if (!IsSorting)
-      IsSorting = true;
-
-    // TODO: implement
-    return _values.Numbers;
   }
 
   private int GetMax()

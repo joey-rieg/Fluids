@@ -37,13 +37,7 @@ public abstract class SortingAlgorithm : MonoBehaviour
       float endTime = Time.realtimeSinceStartup;
       Debug.Log($"Sorting finished in {(endTime - startTime).ToString($"F{5}")}");
     }
-    else if (Keyboard.current.rightArrowKey.wasPressedThisFrame && !IsSorting)
-    {
-      SortNextStep();
-    }
   }
 
   protected abstract int[] Sort();
-
-  protected abstract int[] SortNextStep();
 }
