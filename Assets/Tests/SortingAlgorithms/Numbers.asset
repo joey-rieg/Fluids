@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83e411eb24052a14d83af5b50d6a8092, type: 3}
   m_Name: Numbers
   m_EditorClassIdentifier: 
-  NumValues: 6
+  NumValues: 10
   MinValue: 0
   MaxValue: 100
   Randomize: 1
-  Values: 0900000001000000490000003b0000004f0000003f000000
+  Values: 6100000038000000110000001500000005000000380000003f000000080000002600000049000000
